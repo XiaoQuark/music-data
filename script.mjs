@@ -1,4 +1,4 @@
-import { getUserIDs, getListenEvents } from "./data.mjs";
+import { getUserIDs, getListenEvents, getSong } from "./data.mjs";
 
 const state = {
 	users: null,
@@ -9,6 +9,7 @@ const state = {
 const elements = {
 	userSelect: null,
 	userHeading: "",
+	topSong: "",
 };
 
 window.onload = function () {
@@ -32,10 +33,32 @@ function populateUserDropdown() {
 	}
 }
 
-function handleUserChange() {
+function handleUserChange(event) {
 	state.selectedUser = event.target.value;
 	console.log(state.selectedUser);
 	state.userListenEvents = getListenEvents(state.selectedUser) || [];
-	console.log(state.userListenEvents);
+
 	elements.userHeading.textContent = `User ${state.selectedUser} Listening Stats`;
+
+	elements.topSong = document.getElementById("song-most-listens");
+	const topSongIdByCount = getMostListenedSongByCount(state.userListenEvents);
+	const topSongByCount = getSong(topSongIdByCount);
+	elements.topSong.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
+}
+
+function getMostListenedSongByCount(listenEvents) {
+	const counts = {};
+	let max = 0;
+	let result;
+	for (const event of listenEvents) {
+		const songId = event.song_id;
+		counts[songId] = (counts[songId] || 0) + 1;
+		if (counts[songId] > max) {
+			max = counts[songId];
+			result = songId;
+		}
+	}
+	console.log(counts);
+	console.log(result);
+	return result;
 }
