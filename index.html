@@ -4,17 +4,83 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script type="module" src="script.mjs"></script>
-		<title>Document</title>
+		<title>Music Data</title>
 	</head>
 	<body>
 		<header>
 			<h1>Music Data</h1>
 			<div class="user-select-container">
-				<label for="user-select"></label>
+				<label for="user-select">Select a user</label>
 				<select name="user" id="user-select">
 					<option value="">Select a user...</option>
 				</select>
 			</div>
 		</header>
+		<main>
+			<h2 id="user-heading">User Listening Stats</h2>
+			<section id="data-container">
+				<article class="data-article" id="song-article">
+					<h3 class="data-heading">Most Listened Song</h3>
+					<p id="song-most-listens">
+						By listens:
+						<strong>Song title</strong>
+					</p>
+					<p id="song-most-listen-time">
+						By listening time: Song title
+					</p>
+				</article>
+
+				<article class="data-article" id="artist-article">
+					<h3 class="data-heading">Most Listened Artist</h3>
+					<p id="artist-most-listens">
+						By listens:
+						<strong>Artist name</strong>
+					</p>
+					<p id="artist-most-listen-time">
+						By listening time:
+						<strong>Artist name</strong>
+					</p>
+				</article>
+
+				<article class="data-article" id="friday-night-article">
+					<h3 class="data-heading">
+						Most Listened Song on Friday Nights
+					</h3>
+					<p id="friday-most-listens">
+						By listens:
+						<strong>Song title</strong>
+					</p>
+					<p id="friday-most-listen-time">
+						By listening time:
+						<strong>Song title</strong>
+					</p>
+				</article>
+
+				<article class="data-article" id="song-streak-article">
+					<h3 class="data-heading">Longest Streak Song</h3>
+					<ul id="song-streak-list">
+						<li class="streak-song">
+							<strong>Song title</strong> Streak times
+						</li>
+					</ul>
+				</article>
+
+				<article class="data-article" id="every-day-article">
+					<h3 class="data-heading">Every Day Songs</h3>
+					<ul id="every-day-list">
+						<li class="every-day-song">
+							<strong>Song title</strong>
+						</li>
+					</ul>
+				</article>
+
+				<article class="data-article" id="genres-article">
+					<h3 class="data-heading">Top Genres</h3>
+					<ul id="top-genres">
+						<li class="genre"><strong>Genre</strong></li>
+					</ul>
+				</article>
+			</section>
+		</main>
 	</body>
 </html>
