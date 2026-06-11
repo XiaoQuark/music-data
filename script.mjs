@@ -16,6 +16,7 @@ const elements = {
 	topFridayNightSongByCount: null,
 	topFridayNightSongByTime: null,
 	streakList: null,
+	everydaySongList: null,
 };
 
 window.onload = function () {
@@ -34,6 +35,7 @@ window.onload = function () {
 		"friday-most-listen-time",
 	);
 	elements.streakList = document.getElementById("song-streak-list");
+	elements.everydaySongList = document.getElementById("every-day-list");
 
 	state.users = getUserIDs();
 
@@ -79,7 +81,7 @@ function getFridayNightEvents(listenEvents) {
 			filteredEvents.push(event);
 		}
 	}
-	console.log(filteredEvents);
+
 	return filteredEvents;
 }
 
@@ -131,6 +133,8 @@ function handleUserChange(event) {
 
 	const longestStreak = getLongestStreak(state.userListenEvents);
 
+	const everydaySongs = getEverydaySongs(state.userListenEvents);
+
 	elements.topSongByCount.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
 	elements.topSongByTime.textContent = `By listening time: ${topSongByTime.title} by ${topSongByTime.artist}`;
 	elements.topArtistByCount.textContent = `By listens: ${topArtistByCount}`;
@@ -141,13 +145,23 @@ function handleUserChange(event) {
 	elements.streakList.textContent = "";
 
 	for (const song of longestStreak) {
-		console.log(song);
 		const streakSong = getSong(song.songId);
 		const streakItem = document.createElement("li");
-		console.log(streakSong);
+
 		streakItem.textContent = `${streakSong.title} - ${streakSong.artist}. Listened to ${song.streakLength} times in a row`;
 		streakItem.classList.add("streak-song");
 		elements.streakList.appendChild(streakItem);
+	}
+
+	elements.everydaySongList.textContent = "";
+
+	for (const song of everydaySongs) {
+		const everydaySong = getSong(song);
+		console.log(everydaySong);
+		const songItem = document.createElement("li");
+		songItem.classList.add("everyday-song");
+		songItem.textContent = `${everydaySong.title} by ${everydaySong.artist}`;
+		elements.everydaySongList.appendChild(songItem);
 	}
 }
 
@@ -215,4 +229,39 @@ function getLongestStreak(listenEvents) {
 			streakLength: maxStreak,
 		},
 	];
+}
+
+function getEverydaySongs(listenEvents) {
+	const dateGroups = {};
+	for (const event of listenEvents) {
+		const date = event.timestamp.slice(0, 10);
+		if (!dateGroups[date]) {
+			dateGroups[date] = new Set();
+		}
+		dateGroups[date].add(event.song_id);
+	}
+
+	const allDays = Object.values(dateGroups);
+	console.log(allDays);
+	const firstDay = allDays[0];
+
+	const everydaySongs = [];
+
+	for (const songId of firstDay) {
+		let appearsEveryday = true;
+
+		for (const day of allDays) {
+			if (!day.has(songId)) {
+				appearsEveryday = false;
+				break;
+			}
+		}
+
+		if (appearsEveryday) {
+			everydaySongs.push(songId);
+		}
+	}
+
+	console.log(everydaySongs);
+	return everydaySongs;
 }
