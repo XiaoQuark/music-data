@@ -57,6 +57,8 @@ window.onload = function () {
 	elements.everydaySongList = document.getElementById("every-day-list");
 	elements.topGenresList = document.getElementById("top-genres");
 
+	elements.userHeading.textContent =
+		"Select a User to see their Listening Stats";
 	elements.dataSection.hidden = true;
 
 	state.users = getUserIDs();
@@ -77,6 +79,13 @@ function populateUserDropdown() {
 
 function handleUserChange(event) {
 	state.selectedUser = event.target.value;
+	if (state.selectedUser === "") {
+		elements.dataSection.hidden = true;
+		elements.userHeading.textContent =
+			"Select a User to see their Listening Stats";
+		return;
+	}
+
 	state.userListenEvents = getListenEvents(state.selectedUser) || [];
 
 	if (state.userListenEvents.length === 0) {
