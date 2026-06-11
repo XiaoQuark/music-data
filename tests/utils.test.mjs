@@ -1,6 +1,10 @@
 import assert from "node:assert";
 import test from "node:test";
-import { getFridayNightEvents, getLongestStreak } from "../src/utils.mjs";
+import {
+	getFridayNightEvents,
+	getLongestStreak,
+	getEverydaySongs,
+} from "../src/utils.mjs";
 
 // getFridayNightEvents
 test("returns listens from Friday 5pm onwards", () => {
@@ -140,4 +144,55 @@ test("returns the longest listening streak", () => {
 	];
 
 	assert.deepEqual(result, expected);
+});
+
+// getEverydaySongs
+test("returns songs listened to on every listening day", () => {
+	const listenEvents = [
+		{ timestamp: "2024-08-01T10:00:00", song_id: "song-1" },
+		{ timestamp: "2024-08-01T11:00:00", song_id: "song-2" },
+		{ timestamp: "2024-08-02T10:00:00", song_id: "song-1" },
+		{ timestamp: "2024-08-02T11:00:00", song_id: "song-3" },
+		{ timestamp: "2024-08-03T10:00:00", song_id: "song-1" },
+	];
+
+	const result = getEverydaySongs(listenEvents);
+
+	const expected = ["song-1"];
+
+	assert.deepEqual(result, expected);
+});
+
+test("returns the first song when multiple songs share the longest streak", () => {
+	const listenEvents = [
+		{ song_id: "song-1" },
+		{ song_id: "song-1" },
+		{ song_id: "song-1" },
+		{ song_id: "song-2" },
+		{ song_id: "song-3" },
+		{ song_id: "song-3" },
+		{ song_id: "song-3" },
+	];
+
+	const result = getLongestStreak(listenEvents);
+
+	const expected = [
+		{
+			songId: "song-1",
+			streakLength: 3,
+		},
+	];
+
+	assert.deepEqual(result, expected);
+});
+
+test("returns an empty array when no songs were listened to every day", () => {
+	const listenEvents = [
+		{ timestamp: "2024-08-01T10:00:00", song_id: "song-1" },
+		{ timestamp: "2024-08-02T10:00:00", song_id: "song-2" },
+	];
+
+	const result = getEverydaySongs(listenEvents);
+
+	assert.deepEqual(result, []);
 });
