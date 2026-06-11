@@ -146,23 +146,6 @@ test("returns the longest listening streak", () => {
 	assert.deepEqual(result, expected);
 });
 
-// getEverydaySongs
-test("returns songs listened to on every listening day", () => {
-	const listenEvents = [
-		{ timestamp: "2024-08-01T10:00:00", song_id: "song-1" },
-		{ timestamp: "2024-08-01T11:00:00", song_id: "song-2" },
-		{ timestamp: "2024-08-02T10:00:00", song_id: "song-1" },
-		{ timestamp: "2024-08-02T11:00:00", song_id: "song-3" },
-		{ timestamp: "2024-08-03T10:00:00", song_id: "song-1" },
-	];
-
-	const result = getEverydaySongs(listenEvents);
-
-	const expected = ["song-1"];
-
-	assert.deepEqual(result, expected);
-});
-
 test("returns the first song when multiple songs share the longest streak", () => {
 	const listenEvents = [
 		{ song_id: "song-1" },
@@ -182,6 +165,23 @@ test("returns the first song when multiple songs share the longest streak", () =
 			streakLength: 3,
 		},
 	];
+
+	assert.deepEqual(result, expected);
+});
+
+// getEverydaySongs
+test("returns songs listened to on every listening day", () => {
+	const listenEvents = [
+		{ timestamp: "2024-08-01T10:00:00", song_id: "song-1" },
+		{ timestamp: "2024-08-01T11:00:00", song_id: "song-2" },
+		{ timestamp: "2024-08-02T10:00:00", song_id: "song-1" },
+		{ timestamp: "2024-08-02T11:00:00", song_id: "song-3" },
+		{ timestamp: "2024-08-03T10:00:00", song_id: "song-1" },
+	];
+
+	const result = getEverydaySongs(listenEvents);
+
+	const expected = ["song-1"];
 
 	assert.deepEqual(result, expected);
 });
