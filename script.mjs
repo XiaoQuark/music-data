@@ -15,6 +15,7 @@ const elements = {
 	topArtistByTime: null,
 	topFridayNightSongByCount: null,
 	topFridayNightSongByTime: null,
+	streakList: null,
 };
 
 window.onload = function () {
@@ -22,18 +23,17 @@ window.onload = function () {
 	elements.userHeading = document.getElementById("user-heading");
 	elements.topSongByCount = document.getElementById("song-most-listens");
 	elements.topSongByTime = document.getElementById("song-most-listen-time");
-
 	elements.topArtistByCount = document.getElementById("artist-most-listens");
 	elements.topArtistByTime = document.getElementById(
 		"artist-most-listen-time",
 	);
-
 	elements.topFridayNightSongByCount = document.getElementById(
 		"friday-most-listens",
 	);
 	elements.topFridayNightSongByTime = document.getElementById(
 		"friday-most-listen-time",
 	);
+	elements.streakList = document.getElementById("song-streak-list");
 
 	state.users = getUserIDs();
 
@@ -129,12 +129,26 @@ function handleUserChange(event) {
 
 	const topFridayNightSongByTime = getSong(topFridayNightSongIdByTime);
 
+	const longestStreak = getLongestStreak(state.userListenEvents);
+
 	elements.topSongByCount.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
 	elements.topSongByTime.textContent = `By listening time: ${topSongByTime.title} by ${topSongByTime.artist}`;
 	elements.topArtistByCount.textContent = `By listens: ${topArtistByCount}`;
 	elements.topArtistByTime.textContent = `By listening time: ${topArtistByTime}`;
 	elements.topFridayNightSongByCount.textContent = `By listens: ${topFridayNightSongByCount.title} by ${topFridayNightSongByCount.artist}`;
 	elements.topFridayNightSongByTime.textContent = `By listening time: ${topFridayNightSongByTime.title} by ${topFridayNightSongByTime.artist}`;
+
+	elements.streakList.textContent = "";
+
+	for (const song of longestStreak) {
+		console.log(song);
+		const streakSong = getSong(song.songId);
+		const streakItem = document.createElement("li");
+		console.log(streakSong);
+		streakItem.textContent = `${streakSong.title} - ${streakSong.artist}. Listened to ${song.streakLength} times in a row`;
+		streakItem.classList.add("streak-song");
+		elements.streakList.appendChild(streakItem);
+	}
 }
 
 function getMostListenedByCount(listenEvents, getValueToCount) {
@@ -168,4 +182,37 @@ function getMostListenedByTime(listenEvents, getValueToCount) {
 		}
 	}
 	return mostListened;
+}
+
+function getLongestStreak(listenEvents) {
+	let currentSong = listenEvents[0].song_id;
+	let currentStreak = 1;
+
+	let maxSong = currentSong;
+	let maxStreak = 1;
+
+	for (let i = 1; i < listenEvents.length; i++) {
+		if (listenEvents[i].song_id === currentSong) {
+			currentStreak += 1;
+		} else {
+			if (currentStreak > maxStreak) {
+				maxStreak = currentStreak;
+				maxSong = currentSong;
+			}
+			currentSong = listenEvents[i].song_id;
+			currentStreak = 1;
+		}
+	}
+
+	if (currentStreak > maxStreak) {
+		maxStreak = currentStreak;
+		maxSong = currentSong;
+	}
+
+	return [
+		{
+			songId: maxSong,
+			streakLength: maxStreak,
+		},
+	];
 }
