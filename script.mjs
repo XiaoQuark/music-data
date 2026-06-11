@@ -11,6 +11,7 @@ const elements = {
 	userHeading: null,
 	dataSection: null,
 	fridayNightArticle: null,
+	everydaySongArticle: null,
 	topSongByCount: null,
 	topSongByTime: null,
 	topArtistByCount: null,
@@ -29,6 +30,7 @@ window.onload = function () {
 	elements.fridayNightArticle = document.getElementById(
 		"friday-night-article",
 	);
+	elements.everydaySongArticle = document.getElementById("every-day-article");
 	elements.topSongByCount = document.getElementById("song-most-listens");
 	elements.topSongByTime = document.getElementById("song-most-listen-time");
 	elements.topArtistByCount = document.getElementById("artist-most-listens");
@@ -172,6 +174,24 @@ function handleUserChange(event) {
 
 	const everydaySongs = getEverydaySongs(state.userListenEvents);
 
+	if (everydaySongs.length === 0) {
+		elements.everydaySongArticle.hidden = true;
+		elements.everydaySongList.textContent = "";
+	} else {
+		elements.everydaySongArticle.hidden = false;
+
+		elements.everydaySongList.textContent = "";
+
+		for (const song of everydaySongs) {
+			const everydaySong = getSong(song);
+
+			const songItem = document.createElement("li");
+			songItem.classList.add("everyday-song");
+			songItem.textContent = `${everydaySong.title} by ${everydaySong.artist}`;
+			elements.everydaySongList.appendChild(songItem);
+		}
+	}
+
 	const topGenres = getTopGenres(state.userListenEvents);
 
 	elements.topSongByCount.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
@@ -188,17 +208,6 @@ function handleUserChange(event) {
 		streakItem.textContent = `${streakSong.title} - ${streakSong.artist}. Listened to ${song.streakLength} times in a row`;
 		streakItem.classList.add("streak-song");
 		elements.streakList.appendChild(streakItem);
-	}
-
-	elements.everydaySongList.textContent = "";
-
-	for (const song of everydaySongs) {
-		const everydaySong = getSong(song);
-
-		const songItem = document.createElement("li");
-		songItem.classList.add("everyday-song");
-		songItem.textContent = `${everydaySong.title} by ${everydaySong.artist}`;
-		elements.everydaySongList.appendChild(songItem);
 	}
 
 	elements.topGenresList.textContent = "";
