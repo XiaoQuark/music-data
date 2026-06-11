@@ -17,6 +17,7 @@ const elements = {
 	topFridayNightSongByTime: null,
 	streakList: null,
 	everydaySongList: null,
+	topGenresList: null,
 };
 
 window.onload = function () {
@@ -36,6 +37,7 @@ window.onload = function () {
 	);
 	elements.streakList = document.getElementById("song-streak-list");
 	elements.everydaySongList = document.getElementById("every-day-list");
+	elements.topGenresList = document.getElementById("top-genres");
 
 	state.users = getUserIDs();
 
@@ -83,6 +85,19 @@ function getFridayNightEvents(listenEvents) {
 	}
 
 	return filteredEvents;
+}
+
+function getGenreName(listenEvent) {
+	return getSong(listenEvent.song_id).genre;
+}
+
+function getTopGenres(listenEvents) {
+	const genreCounts = getCountsByListenEvents(listenEvents, getGenreName);
+
+	return Object.entries(genreCounts)
+		.sort((a, b) => b[1] - a[1])
+		.slice(0, 3)
+		.map((genre) => genre[0]);
 }
 
 function handleUserChange(event) {
@@ -135,6 +150,8 @@ function handleUserChange(event) {
 
 	const everydaySongs = getEverydaySongs(state.userListenEvents);
 
+	const topGenres = getTopGenres(state.userListenEvents);
+
 	elements.topSongByCount.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
 	elements.topSongByTime.textContent = `By listening time: ${topSongByTime.title} by ${topSongByTime.artist}`;
 	elements.topArtistByCount.textContent = `By listens: ${topArtistByCount}`;
@@ -163,22 +180,41 @@ function handleUserChange(event) {
 		songItem.textContent = `${everydaySong.title} by ${everydaySong.artist}`;
 		elements.everydaySongList.appendChild(songItem);
 	}
+
+	elements.topGenresList.textContent = "";
+
+	for (const genre of topGenres) {
+		const genreItem = document.createElement("li");
+		genreItem.classList.add("genre");
+		genreItem.textContent = genre;
+		elements.topGenresList.appendChild(genreItem);
+	}
 }
 
 function getMostListenedByCount(listenEvents, getValueToCount) {
-	const counts = {};
+	const counts = getCountsByListenEvents(listenEvents, getValueToCount);
+
 	let maxCount = 0;
 	let mostListened;
-	for (const event of listenEvents) {
-		const value = getValueToCount(event);
-		counts[value] = (counts[value] || 0) + 1;
 
+	for (const value in counts) {
 		if (counts[value] > maxCount) {
 			maxCount = counts[value];
 			mostListened = value;
 		}
 	}
 	return mostListened;
+}
+
+function getCountsByListenEvents(listenEvents, getValueToCount) {
+	const counts = {};
+
+	for (const event of listenEvents) {
+		const value = getValueToCount(event);
+		counts[value] = (counts[value] || 0) + 1;
+	}
+
+	return counts;
 }
 
 function getMostListenedByTime(listenEvents, getValueToCount) {
