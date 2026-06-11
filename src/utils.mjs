@@ -82,6 +82,10 @@ export function getMostListenedByTime(listenEvents, getValueToCount) {
 	return mostListened;
 }
 export function getLongestStreak(listenEvents) {
+	if (listenEvents.length === 0) {
+		return [];
+	}
+
 	let currentSong = listenEvents[0].song_id;
 	let currentStreak = 1;
 
@@ -114,6 +118,10 @@ export function getLongestStreak(listenEvents) {
 	];
 }
 export function getEverydaySongs(listenEvents) {
+	if (listenEvents.length === 0) {
+		return [];
+	}
+
 	const dateGroups = {};
 	for (const event of listenEvents) {
 		const date = event.timestamp.slice(0, 10);

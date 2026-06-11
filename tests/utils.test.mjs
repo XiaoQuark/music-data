@@ -169,6 +169,13 @@ test("returns the first song when multiple songs share the longest streak", () =
 	assert.deepEqual(result, expected);
 });
 
+test("returns an empty array for longest streak when there are no listens", () => {
+	const listenEvents = [];
+
+	const result = getLongestStreak(listenEvents);
+	assert.deepEqual(result, []);
+});
+
 // getEverydaySongs
 test("returns songs listened to on every listening day", () => {
 	const listenEvents = [
