@@ -10,6 +10,7 @@ const elements = {
 	userSelect: null,
 	userHeading: null,
 	dataSection: null,
+	fridayNightArticle: null,
 	topSongByCount: null,
 	topSongByTime: null,
 	topArtistByCount: null,
@@ -25,6 +26,9 @@ window.onload = function () {
 	elements.userSelect = document.getElementById("user-select");
 	elements.userHeading = document.getElementById("user-heading");
 	elements.dataSection = document.getElementById("data-container");
+	elements.fridayNightArticle = document.getElementById(
+		"friday-night-article",
+	);
 	elements.topSongByCount = document.getElementById("song-most-listens");
 	elements.topSongByTime = document.getElementById("song-most-listen-time");
 	elements.topArtistByCount = document.getElementById("artist-most-listens");
@@ -116,7 +120,6 @@ function handleUserChange(event) {
 	}
 
 	elements.dataSection.hidden = false;
-
 	elements.userHeading.textContent = `User ${state.selectedUser} Listening Stats`;
 
 	const topSongIdByCount = getMostListenedByCount(
@@ -133,12 +136,25 @@ function handleUserChange(event) {
 
 	const fridayNightEvents = getFridayNightEvents(state.userListenEvents);
 
-	const topFridayNightSongIdByCount = getMostListenedByCount(
-		fridayNightEvents,
-		getSongId,
-	);
+	if (fridayNightEvents.length === 0) {
+		elements.fridayNightArticle.hidden = true;
+	} else {
+		elements.fridayNightArticle.hidden = false;
+		const topFridayNightSongIdByCount = getMostListenedByCount(
+			fridayNightEvents,
+			getSongId,
+		);
+		const topFridayNightSongByCount = getSong(topFridayNightSongIdByCount);
 
-	const topFridayNightSongByCount = getSong(topFridayNightSongIdByCount);
+		const topFridayNightSongIdByTime = getMostListenedByTime(
+			fridayNightEvents,
+			getSongId,
+		);
+		const topFridayNightSongByTime = getSong(topFridayNightSongIdByTime);
+
+		elements.topFridayNightSongByCount.textContent = `By listens: ${topFridayNightSongByCount.title} by ${topFridayNightSongByCount.artist}`;
+		elements.topFridayNightSongByTime.textContent = `By listening time: ${topFridayNightSongByTime.title} by ${topFridayNightSongByTime.artist}`;
+	}
 
 	const topSongIdByTime = getMostListenedByTime(
 		state.userListenEvents,
@@ -152,13 +168,6 @@ function handleUserChange(event) {
 		getArtistName,
 	);
 
-	const topFridayNightSongIdByTime = getMostListenedByTime(
-		fridayNightEvents,
-		getSongId,
-	);
-
-	const topFridayNightSongByTime = getSong(topFridayNightSongIdByTime);
-
 	const longestStreak = getLongestStreak(state.userListenEvents);
 
 	const everydaySongs = getEverydaySongs(state.userListenEvents);
@@ -169,8 +178,6 @@ function handleUserChange(event) {
 	elements.topSongByTime.textContent = `By listening time: ${topSongByTime.title} by ${topSongByTime.artist}`;
 	elements.topArtistByCount.textContent = `By listens: ${topArtistByCount}`;
 	elements.topArtistByTime.textContent = `By listening time: ${topArtistByTime}`;
-	elements.topFridayNightSongByCount.textContent = `By listens: ${topFridayNightSongByCount.title} by ${topFridayNightSongByCount.artist}`;
-	elements.topFridayNightSongByTime.textContent = `By listening time: ${topFridayNightSongByTime.title} by ${topFridayNightSongByTime.artist}`;
 
 	elements.streakList.textContent = "";
 
@@ -187,7 +194,7 @@ function handleUserChange(event) {
 
 	for (const song of everydaySongs) {
 		const everydaySong = getSong(song);
-		console.log(everydaySong);
+
 		const songItem = document.createElement("li");
 		songItem.classList.add("everyday-song");
 		songItem.textContent = `${everydaySong.title} by ${everydaySong.artist}`;
@@ -291,7 +298,7 @@ function getEverydaySongs(listenEvents) {
 	}
 
 	const allDays = Object.values(dateGroups);
-	console.log(allDays);
+
 	const firstDay = allDays[0];
 
 	const everydaySongs = [];
@@ -311,6 +318,5 @@ function getEverydaySongs(listenEvents) {
 		}
 	}
 
-	console.log(everydaySongs);
 	return everydaySongs;
 }
