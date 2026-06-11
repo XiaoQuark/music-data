@@ -9,18 +9,30 @@ const state = {
 const elements = {
 	userSelect: null,
 	userHeading: "",
-	topSong: "",
-	topArtist: "",
-	topFridayNightSong: "",
+	topSongByCount: null,
+	topSongByTime: null,
+	topArtistByCount: null,
+	topArtistByTime: null,
+	topFridayNightSongByCount: null,
+	topFridayNightSongByTime: null,
 };
 
 window.onload = function () {
 	elements.userSelect = document.getElementById("user-select");
 	elements.userHeading = document.getElementById("user-heading");
-	elements.topSong = document.getElementById("song-most-listens");
-	elements.topArtist = document.getElementById("artist-most-listens");
-	elements.topFridayNightSong = document.getElementById(
+	elements.topSongByCount = document.getElementById("song-most-listens");
+	elements.topSongByTime = document.getElementById("song-most-listen-time");
+
+	elements.topArtistByCount = document.getElementById("artist-most-listens");
+	elements.topArtistByTime = document.getElementById(
+		"artist-most-listen-time",
+	);
+
+	elements.topFridayNightSongByCount = document.getElementById(
 		"friday-most-listens",
+	);
+	elements.topFridayNightSongByTime = document.getElementById(
+		"friday-most-listen-time",
 	);
 
 	state.users = getUserIDs();
@@ -73,7 +85,6 @@ function getFridayNightEvents(listenEvents) {
 
 function handleUserChange(event) {
 	state.selectedUser = event.target.value;
-	console.log(state.selectedUser);
 	state.userListenEvents = getListenEvents(state.selectedUser) || [];
 
 	elements.userHeading.textContent = `User ${state.selectedUser} Listening Stats`;
@@ -99,9 +110,31 @@ function handleUserChange(event) {
 
 	const topFridayNightSongByCount = getSong(topFridayNightSongIdByCount);
 
-	elements.topSong.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
-	elements.topArtist.textContent = `By listens: ${topArtistByCount}`;
-	elements.topFridayNightSong.textContent = `By listens: ${topFridayNightSongByCount.title} by ${topFridayNightSongByCount.artist}`;
+	const topSongIdByTime = getMostListenedByTime(
+		state.userListenEvents,
+		getSongId,
+	);
+
+	const topSongByTime = getSong(topSongIdByTime);
+
+	const topArtistByTime = getMostListenedByTime(
+		state.userListenEvents,
+		getArtistName,
+	);
+
+	const topFridayNightSongIdByTime = getMostListenedByTime(
+		fridayNightEvents,
+		getSongId,
+	);
+
+	const topFridayNightSongByTime = getSong(topFridayNightSongIdByTime);
+
+	elements.topSongByCount.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
+	elements.topSongByTime.textContent = `By listening time: ${topSongByTime.title} by ${topSongByTime.artist}`;
+	elements.topArtistByCount.textContent = `By listens: ${topArtistByCount}`;
+	elements.topArtistByTime.textContent = `By listening time: ${topArtistByTime}`;
+	elements.topFridayNightSongByCount.textContent = `By listens: ${topFridayNightSongByCount.title} by ${topFridayNightSongByCount.artist}`;
+	elements.topFridayNightSongByTime.textContent = `By listening time: ${topFridayNightSongByTime.title} by ${topFridayNightSongByTime.artist}`;
 }
 
 function getMostListenedByCount(listenEvents, getValueToCount) {
@@ -111,6 +144,23 @@ function getMostListenedByCount(listenEvents, getValueToCount) {
 	for (const event of listenEvents) {
 		const value = getValueToCount(event);
 		counts[value] = (counts[value] || 0) + 1;
+
+		if (counts[value] > maxCount) {
+			maxCount = counts[value];
+			mostListened = value;
+		}
+	}
+	return mostListened;
+}
+
+function getMostListenedByTime(listenEvents, getValueToCount) {
+	const counts = {};
+	let maxCount = 0;
+	let mostListened;
+	for (const event of listenEvents) {
+		const value = getValueToCount(event);
+		counts[value] =
+			(counts[value] || 0) + getSong(event.song_id).duration_seconds;
 
 		if (counts[value] > maxCount) {
 			maxCount = counts[value];
