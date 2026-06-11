@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import test from "node:test";
-import { getFridayNightEvents } from "../src/utils.mjs";
+import { getFridayNightEvents, getLongestStreak } from "../src/utils.mjs";
 
 // getFridayNightEvents
 test("returns listens from Friday 5pm onwards", () => {
@@ -116,4 +116,28 @@ test("returns an empty array when there are no Friday night listens", () => {
 	const result = getFridayNightEvents(listenEvents);
 
 	assert.deepEqual(result, []);
+});
+
+// getLongestStreak
+test("returns the longest listening streak", () => {
+	const listenEvents = [
+		{ song_id: "song-1" },
+		{ song_id: "song-1" },
+		{ song_id: "song-2" },
+		{ song_id: "song-2" },
+		{ song_id: "song-2" },
+		{ song_id: "song-1" },
+		{ song_id: "song-1" },
+	];
+
+	const result = getLongestStreak(listenEvents);
+
+	const expected = [
+		{
+			songId: "song-2",
+			streakLength: 3,
+		},
+	];
+
+	assert.deepEqual(result, expected);
 });
