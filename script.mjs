@@ -10,13 +10,15 @@ const elements = {
 	userSelect: null,
 	userHeading: "",
 	topSong: "",
+	topArtist: "",
 };
 
 window.onload = function () {
 	elements.userSelect = document.getElementById("user-select");
 	elements.userHeading = document.getElementById("user-heading");
-	// document.querySelector("body").innerText =
-	// 	`There are ${countUsers()} users`;
+	elements.topSong = document.getElementById("song-most-listens");
+	elements.topArtist = document.getElementById("artist-most-listens");
+
 	state.users = getUserIDs();
 
 	populateUserDropdown();
@@ -33,6 +35,14 @@ function populateUserDropdown() {
 	}
 }
 
+function getSongId(listenEvent) {
+	return listenEvent.song_id;
+}
+
+function getArtistName(listenEvent) {
+	return getSong(listenEvent.song_id).artist;
+}
+
 function handleUserChange(event) {
 	state.selectedUser = event.target.value;
 	console.log(state.selectedUser);
@@ -40,25 +50,35 @@ function handleUserChange(event) {
 
 	elements.userHeading.textContent = `User ${state.selectedUser} Listening Stats`;
 
-	elements.topSong = document.getElementById("song-most-listens");
-	const topSongIdByCount = getMostListenedSongByCount(state.userListenEvents);
+	const topSongIdByCount = getMostListenedByCount(
+		state.userListenEvents,
+		getSongId,
+	);
+
 	const topSongByCount = getSong(topSongIdByCount);
+
 	elements.topSong.textContent = `By listens: ${topSongByCount.title} by ${topSongByCount.artist}`;
+
+	const topArtistByCount = getMostListenedByCount(
+		state.userListenEvents,
+		getArtistName,
+	);
+
+	elements.topArtist.textContent = `By listens: ${topArtistByCount}`;
 }
 
-function getMostListenedSongByCount(listenEvents) {
+function getMostListenedByCount(listenEvents, getValueToCount) {
 	const counts = {};
-	let max = 0;
-	let result;
+	let maxCount = 0;
+	let mostListened;
 	for (const event of listenEvents) {
-		const songId = event.song_id;
-		counts[songId] = (counts[songId] || 0) + 1;
-		if (counts[songId] > max) {
-			max = counts[songId];
-			result = songId;
+		const value = getValueToCount(event);
+		counts[value] = (counts[value] || 0) + 1;
+
+		if (counts[value] > maxCount) {
+			maxCount = counts[value];
+			mostListened = value;
 		}
 	}
-	console.log(counts);
-	console.log(result);
-	return result;
+	return mostListened;
 }
