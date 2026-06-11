@@ -8,7 +8,8 @@ const state = {
 
 const elements = {
 	userSelect: null,
-	userHeading: "",
+	userHeading: null,
+	dataSection: null,
 	topSongByCount: null,
 	topSongByTime: null,
 	topArtistByCount: null,
@@ -23,6 +24,7 @@ const elements = {
 window.onload = function () {
 	elements.userSelect = document.getElementById("user-select");
 	elements.userHeading = document.getElementById("user-heading");
+	elements.dataSection = document.getElementById("data-container");
 	elements.topSongByCount = document.getElementById("song-most-listens");
 	elements.topSongByTime = document.getElementById("song-most-listen-time");
 	elements.topArtistByCount = document.getElementById("artist-most-listens");
@@ -38,6 +40,8 @@ window.onload = function () {
 	elements.streakList = document.getElementById("song-streak-list");
 	elements.everydaySongList = document.getElementById("every-day-list");
 	elements.topGenresList = document.getElementById("top-genres");
+
+	elements.dataSection.hidden = true;
 
 	state.users = getUserIDs();
 
@@ -103,6 +107,15 @@ function getTopGenres(listenEvents) {
 function handleUserChange(event) {
 	state.selectedUser = event.target.value;
 	state.userListenEvents = getListenEvents(state.selectedUser) || [];
+
+	if (state.userListenEvents.length === 0) {
+		elements.dataSection.hidden = true;
+		elements.userHeading.textContent = `User ${state.selectedUser} has no listening data`;
+
+		return;
+	}
+
+	elements.dataSection.hidden = false;
 
 	elements.userHeading.textContent = `User ${state.selectedUser} Listening Stats`;
 
